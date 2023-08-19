@@ -97,7 +97,6 @@ const addUsersDetails=async(req,res)=>{
     });   
 }
 const getUser=async(req,res)=>{
-        
         conn.query('SELECT * FROM tblusers', (error, results) => {
         if (error){
             res.status(400).json({
@@ -109,31 +108,14 @@ const getUser=async(req,res)=>{
         }else{
             res.status(200).json({
                 statusCode:200,
-                message:'all Users ',
+                message:results,
                 status:true
             });
         }
-        
       });
     
 
-        // if(err){
-        //     res.status(400).json({
-        //         statusCode:400,
-        //         message:err.message,
-        //         status:true
-        //     });
-        // }else{
-        //     console.log('connected');
-        //     res.status(200).json({
-        //         statusCode:200,
-        //         message:'all Users ',
-        //         status:true
-        //     });
-        // }
-        
-        
-      
+       
     // conn.query('SELECT * FROM tblusers', (error, results) => {
     //     if (error) throw error;
     //     console.log('Results:', results);
