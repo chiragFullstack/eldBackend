@@ -97,16 +97,41 @@ const addUsersDetails=async(req,res)=>{
     });   
 }
 const getUser=async(req,res)=>{
-    conn.query('SELECT * FROM tblusers', (error, results) => {
-        if (error) throw error;
-        console.log('Results:', results);
-      });
-    res.status(200).json({
-        statusCode:200,
-        message:'Invalid  Password',
-        data:results.rows,
-        status:true
-    });
+    await conn.connect((err) => {
+        if(err){
+            res.status(400).json({
+                statusCode:400,
+                message:'not valid Users ',
+                status:true
+            });
+        }else{
+            console.log('connected');
+            res.status(200).json({
+                statusCode:200,
+                message:'all Users ',
+                status:true
+            });
+        }
+        
+        
+        conn.end((endErr) => {
+            if (endErr) {
+                console.error('Error closing connection:', endErr);
+            } else {
+                console.log('Connection closed');
+            }
+        });
+    })
+    // conn.query('SELECT * FROM tblusers', (error, results) => {
+    //     if (error) throw error;
+    //     console.log('Results:', results);
+    //   });
+    // res.status(200).json({
+    //     statusCode:200,
+    //     message:'all Users ',
+    //     data:results.rows,
+    //     status:true
+    // });
 }
 
 const checkLoginDetails=async(req,res)=>{

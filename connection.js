@@ -5,7 +5,7 @@ const mysql = require('mysql');
 //     password: '',
 //     database: 'eld'
 // });
-const connection = mysql.createPool({
+const connection = mysql.createConnection({
     host: 'localhost',
     user: 'arcopgcy_admin',
     password: '#0N-HerUny%h',
