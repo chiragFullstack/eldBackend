@@ -35,6 +35,7 @@ const deleteNoticeBySchool=(req,res)=>{
 const addUsersDetails=async(req,res)=>{
     const{firstName,lastName,userName,password,role,email, phoneNo,licenseNo, state, expiration, exempt,startingperiod,hosrules, allowpersonalName, allowYardMove }=req.body;
     const status=0;
+    console.log(req.body);
      //insert the data into the user Table 
     const saltRounds = 10; // Number of salt rounds
     bcrypt.hash(password, saltRounds,async (err, hash) => {
