@@ -133,59 +133,45 @@ const checkLoginDetails=async(req,res)=>{
     const{userName,password}=req.body;
     console.log('all data ---',req.body);
     const status=0;
-     //insert the data into the user Table 
-    const saltRounds = 10; // Number of salt rounds
-    await conn.connect((err) => {
-        const checkUsers = "select * from tblusers where userName=?";
-        const usersValues = [userName];
-        conn.query(checkUsers, usersValues, (errUser, resultsUser) => {
-            if(errUser){
-                console.log('while checking the error :',errUser);
-                res.status(400).json({
-                    statusCode:400,
-                    message:'Invalid User Name',
-                    data:[],
-                    status:true
-                });
-            }else{
-                const savedPassword=resultsUser[0].password;
-                bcrypt.compare(password, savedPassword, (err, result) => {
-                    if (err) {
-                        console.error('Error comparing passwords:', err);
-                        return;
-                    }
-                
-                    if (result) {
-                        console.log('Password is correct',resultsUser[0]);
-                        res.status(200).json({
-                            statusCode:200,
-                            message:'Valid  user name and Password',
-                            data:resultsUser[0],
-                            status:true
-                        });
-                    } else {
-                        console.log('Password is incorrect');
-                        res.status(400).json({
-                            statusCode:400,
-                            message:'Invalid  Password',
-                            data:[],
-                            status:true
-                        });
-                        
-                    }
-                });
-            }
+    try {
+      const conn_ = await conn.getConnection(); // Get a connection from the pool
+  
+      const checkUsers = "select * from tblusers where userName=?";
+      const usersValues = [userName];
+      
+      const [resultsUser] = await conn_.execute(checkUsers, usersValues);
+      const savedPassword = resultsUser[0].password;
+  
+      const passwordMatch = await bcrypt.compare(password, savedPassword);
+  
+      if (passwordMatch) {
+        console.log('Password is correct', resultsUser[0]);
+        res.status(200).json({
+          statusCode: 200,
+          message: 'Valid user name and Password',
+          data: resultsUser[0],
+          status: true
         });
-       
-        conn.end((endErr) => {
-            if (endErr) {
-                console.error('Error closing connection:', endErr);
-            } else {
-                console.log('Connection closed');
-            }
+      } else {
+        console.log('Password is incorrect');
+        res.status(400).json({
+          statusCode: 400,
+          message: 'Invalid Password',
+          data: [],
+          status: true
         });
-
-   });
+      }
+  
+      conn_.release(); // Release the connection back to the pool
+    } catch (err) {
+      console.error('Error:', err.message);
+      res.status(500).json({
+        statusCode: 500,
+        message: 'Internal Server Error',
+        data: [],
+        status: false
+      });
+    }
 }
 
 

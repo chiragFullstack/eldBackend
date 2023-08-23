@@ -1,4 +1,5 @@
-const mysql = require('mysql');
+const mysql_ = require('mysql');
+const mysql = require('mysql2/promise');
 // const connection = mysql.createPool({
 //     host: 'localhost',
 //     user: 'root',
@@ -6,7 +7,7 @@ const mysql = require('mysql');
 //     database: 'eld'
 // });
 
-    const connection = mysql.createConnection({
+    const connection = mysql.createPool({
         host: '208.109.67.112',
         user: 'Yadbir',//'arcopgcy_admin',   //adminEld
         password:'Canteen123!@#', //'Chirag!@#123' //
