@@ -7,9 +7,18 @@ const http=require('http');
 
 const conn=require('./connection');
 
+// registeration of users 
 const registerUser=require('./routes/user/registerUser');
 const login=require('./routes/user/login');
 const listUser=require('./routes/user/driverList');
+
+//registeration of organization 
+const addOrganization=require('./routes/organization/addOrganization');
+const ListOrganization=require('./routes/organization/OrganizationList');
+const deleteOrganization=require('./routes/organization/deleteOrganization');
+const organizationDetails=require('./routes/organization/OrganizationDetails');
+const editOrganization=require('./routes/organization/editOrganization');
+
 
 const app=express();
 app.use(express.json());
@@ -21,6 +30,15 @@ app.use(bodyParser.json());
 app.use('/api/register',registerUser);
 app.use('/api/login',login);
 app.use('/api/driver',listUser);
+
+
+
+
+app.use('/api/organization',addOrganization);
+app.use('/api/organization',ListOrganization);
+app.use('/api/organization',deleteOrganization);
+app.use('/api/organization',organizationDetails);
+app.use('/api/organization',editOrganization);
 
 const PORT=process.env.PORT|5000;
 

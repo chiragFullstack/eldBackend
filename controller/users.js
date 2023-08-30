@@ -4,34 +4,6 @@ const bcrypt = require('bcrypt');
 
 
 
-const deleteNoticeBySchool=(req,res)=>{
-    let id=0;
-    if(req.query.id){
-        id= parseInt(req.query.id);
-    }else{
-        id= parseInt(req.body.id);
-    }
-    pool.query('delete from tblnotice where id=$1',[id],(err,result)=>{
-        if(err){console.log(err);
-            res.status(400).json({
-                message:err,
-                statusCode:400,
-                status:false,  
-            });
-        }
-        else{
-            res.status(200).json({
-                message:'All Notice',
-                statusCode:200,
-                status:true,
-                data:result.rows
-            });
-        }
-    });
-}
-
-
-
 const addUsersDetails=async(req,res)=>{
     const{firstName,lastName,userName,password,role,email, phoneNo,licenseNo, state, expiration, exempt,startingperiod,hosrules, allowpersonalName, allowYardMove }=req.body;
     const status=0;
@@ -114,19 +86,6 @@ const getUser=async(req,res)=>{
             });
         }
       });
-    
-
-       
-    // conn.query('SELECT * FROM tblusers', (error, results) => {
-    //     if (error) throw error;
-    //     console.log('Results:', results);
-    //   });
-    // res.status(200).json({
-    //     statusCode:200,
-    //     message:'all Users ',
-    //     data:results.rows,
-    //     status:true
-    // });
 }
 
 const checkLoginDetails=async(req,res)=>{
@@ -135,13 +94,10 @@ const checkLoginDetails=async(req,res)=>{
     const status=0;
     try {
       const conn_ = await conn.getConnection(); // Get a connection from the pool
-  
       const checkUsers = "select * from tblusers where userName=?";
       const usersValues = [userName];
-      
       const [resultsUser] = await conn_.execute(checkUsers, usersValues);
       const savedPassword = resultsUser[0].password;
-  
       const passwordMatch = await bcrypt.compare(password, savedPassword);
   
       if (passwordMatch) {
@@ -161,7 +117,6 @@ const checkLoginDetails=async(req,res)=>{
           status: true
         });
       }
-  
       conn_.release(); // Release the connection back to the pool
     } catch (err) {
       console.error('Error:', err.message);
@@ -175,53 +130,9 @@ const checkLoginDetails=async(req,res)=>{
 }
 
 
-const addNotice=async(req, res) =>{
-    const{schoolId,message,noticedate}=req.body;
-    console.log(schoolId,'---',req.body);
-    pool.connect();
-    pool.query('insert into tblnotice(schoolid,message,noticedate)values($1,$2,$3) RETURNING *',[schoolId,message,noticedate],(err,result)=>{
-        if(err){console.log(err); 
-            res.status(400).json({
-                statusCode:400,
-                message:err,
-                status:false
-            });
-        }
-        else{
-            res.status(200).json({
-                statusCode:200,
-                message:'Room Record Inserted',
-                data:result.rows[0],
-                status:true
-            });
-        }
-    });    
-}
 
 
-const editNotice=async(req, res) =>{
-    const{id,schoolId,message,noticedate}=req.body;
-    let school_id = parseInt(schoolId)
-    console.log(school_id,'---',req.body);
-    pool.connect();
-    pool.query('update tblnotice set schoolid=$1,message=$2,noticedate=$3 where id='+id+' RETURNING *',[school_id,message,noticedate],(err,result)=>{
-        if(err){console.log(err); 
-            res.status(err.code).json({
-                statusCode:err.code,
-                message:err.message,
-                status:false
-            });
-        }
-        else{
-            res.status(200).json({
-                statusCode:200,
-                message:'Room Record Inserted',
-                data:result.rows,
-                status:true
-            });
-        }
-    });    
-}
+
 
 module.exports={
     addUsersDetails,checkLoginDetails,getUser
