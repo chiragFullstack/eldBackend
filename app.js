@@ -19,6 +19,12 @@ const deleteOrganization=require('./routes/organization/deleteOrganization');
 const organizationDetails=require('./routes/organization/OrganizationDetails');
 const editOrganization=require('./routes/organization/editOrganization');
 
+//vehicle registeration and crud
+const addVehicleDetails=require('./routes/vehicle/addVehicle');
+const vehicledelete=require('./routes/vehicle/deleteVehicle');
+const AllVehicleList=require('./routes/vehicle/vehicleList');
+const VehicleRecordById=require('./routes/vehicle/vehicleDetails');
+const editVehicleDetails=require('./routes/vehicle/editVehicle');
 
 const app=express();
 app.use(express.json());
@@ -40,8 +46,16 @@ app.use('/api/organization',deleteOrganization);
 app.use('/api/organization',organizationDetails);
 app.use('/api/organization',editOrganization);
 
-const PORT=process.env.PORT|5000;
 
+
+//call vehile api 
+app.use('/api/vehicle',addVehicleDetails);
+app.use('/api/vehicle',vehicledelete);
+app.use('/api/vehicle',AllVehicleList);
+app.use('/api/vehicle',VehicleRecordById);
+app.use('/api/vehicle',editVehicleDetails);
+
+const PORT=process.env.PORT|5000;
 
 app.listen(PORT,async()=>{
     console.log('server is running');
