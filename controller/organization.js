@@ -1,5 +1,6 @@
 const conn=require('../connection');
 const bcrypt = require('bcrypt');
+const moment = require('moment');
 
 
 const addOrganizationDetails=async(req,res)=>{
@@ -201,7 +202,46 @@ const editOrganizationDetails=async(req,res)=>{
 
 
 
+const assignOrganizationDriver=async(req,res)=>{
+    const{orgId,driverId,vehicleId}=req.body;
+    try{
+        var utcMoment = moment.utc();
+        const formattedDateTime = new Date( utcMoment.format() );
+        const conn_ = await conn.getConnection(); // Get a connection from the pool
+        const OrgDriver = "insert into tblOrganization_Driver(organizationId,driverId,vehicleId,assignedDate)values(?,?,?,?)";
+        const orgDriverValues = [orgId,driverId,vehicleId,formattedDateTime];
+        console.log('Organization values---',orgDriverValues);
+        const data=await conn_.execute(OrgDriver, orgDriverValues);
+        if(data){
+            console.log('Assigned Driver Sucessfully  :',data);
+            res.status(200).json({
+                statusCode:200,
+                message:'Record Updated',
+                data:data,
+                status:true
+            });
+        }else{
+            res.status(400).json({
+                statusCode:400,
+                message:"Check Record Properly ",
+                data:[],
+                status:true
+            });
+        }
+        conn_.release();
+    }catch(err){
+        console.error('Error:', err.message);
+        res.status(400).json({
+          statusCode: 400,
+          message:err.message,
+          data: [],
+          status: false
+        });
+    }
+}
+
 
 module.exports={
-    addOrganizationDetails,organizationList,organizationDelete,organizationDetails,editOrganizationDetails
+    addOrganizationDetails,organizationList,organizationDelete,
+    organizationDetails,editOrganizationDetails,assignOrganizationDriver
 }

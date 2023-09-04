@@ -11,6 +11,8 @@ const conn=require('./connection');
 const registerUser=require('./routes/user/registerUser');
 const login=require('./routes/user/login');
 const listUser=require('./routes/user/driverList');
+const allDriverName=require('./routes/user/driverNameList');
+const driverProfile=require('./routes/user/driverProfile');
 
 //registeration of organization 
 const addOrganization=require('./routes/organization/addOrganization');
@@ -18,6 +20,8 @@ const ListOrganization=require('./routes/organization/OrganizationList');
 const deleteOrganization=require('./routes/organization/deleteOrganization');
 const organizationDetails=require('./routes/organization/OrganizationDetails');
 const editOrganization=require('./routes/organization/editOrganization');
+const assignedDriver=require('./routes/organization/OrganizationDriver');
+
 
 //vehicle registeration and crud
 const addVehicleDetails=require('./routes/vehicle/addVehicle');
@@ -25,6 +29,8 @@ const vehicledelete=require('./routes/vehicle/deleteVehicle');
 const AllVehicleList=require('./routes/vehicle/vehicleList');
 const VehicleRecordById=require('./routes/vehicle/vehicleDetails');
 const editVehicleDetails=require('./routes/vehicle/editVehicle');
+const unAssignedVehicleList=require('./routes/vehicle/getVehiclelistForAssign');
+const assignDrivertoVehicle=require('./routes/vehicle/assignDriver');
 
 const app=express();
 app.use(express.json());
@@ -36,8 +42,8 @@ app.use(bodyParser.json());
 app.use('/api/register',registerUser);
 app.use('/api/login',login);
 app.use('/api/driver',listUser);
-
-
+app.use('/api/driver',allDriverName);
+app.use('/api/driver',driverProfile);
 
 
 app.use('/api/organization',addOrganization);
@@ -45,6 +51,7 @@ app.use('/api/organization',ListOrganization);
 app.use('/api/organization',deleteOrganization);
 app.use('/api/organization',organizationDetails);
 app.use('/api/organization',editOrganization);
+app.use('/api/organization',assignedDriver);
 
 
 
@@ -54,6 +61,8 @@ app.use('/api/vehicle',vehicledelete);
 app.use('/api/vehicle',AllVehicleList);
 app.use('/api/vehicle',VehicleRecordById);
 app.use('/api/vehicle',editVehicleDetails);
+app.use('/api/vehicle',unAssignedVehicleList);
+app.use('/api/vehicle',assignDrivertoVehicle)
 
 const PORT=process.env.PORT|5000;
 
