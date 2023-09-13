@@ -11,8 +11,12 @@ const conn=require('./connection');
 const registerUser=require('./routes/user/registerUser');
 const login=require('./routes/user/login');
 const listUser=require('./routes/user/driverList');
+const otpSend=require('./routes/user/sendOTP');
+const changePassword=require('./routes/user/updateUserPassword');
+
 const allDriverName=require('./routes/user/driverNameList');
 const driverProfile=require('./routes/user/driverProfile');
+
 
 //registeration of organization 
 const addOrganization=require('./routes/organization/addOrganization');
@@ -41,6 +45,10 @@ app.use(bodyParser.json());
 
 app.use('/api/register',registerUser);
 app.use('/api/login',login);
+app.use('/api/reset/',otpSend);
+app.use('/api/reset/',changePassword);
+
+
 app.use('/api/driver',listUser);
 app.use('/api/driver',allDriverName);
 app.use('/api/driver',driverProfile);

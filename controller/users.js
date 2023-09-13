@@ -77,6 +77,65 @@ const getUser=async(req,res)=>{
       });
 }
 
+const sendOtp=async(req,res)=>{
+    const email=parseInt(req.body.email);
+    console.log('email',email);
+    // 
+    const conn_ = await conn.getConnection();
+    const checkUsers = "select * from tblusers where email=?";
+    const usersValues = [user_Id];
+    const [resultsUser] = await conn_.execute(checkUsers, usersValues);
+    if(resultsUser.length==0){
+         res.status(400).json({
+            statusCode: 400,
+            message: 'Invalid Student ID',
+            data: [],
+            status: false
+        });
+    }else{
+        const emailId = resultsUser[0].email;
+        const responseData={
+            "otp":"1111",
+            "user_Id":resultsUser[0].id,
+            "email":emailId
+        }
+        res.status(200).json({
+            statusCode: 200,
+            message: 'OTP has been sent to Email-Id',
+            data:responseData,
+            status: true
+        });
+    }
+}
+
+const updatePassword=async(req,res)=>{
+    const {email,otp,newPassword}=req.body;
+    console.log(req.body);
+    if(parseInt(otp)==1111){
+        console.log('otp matched');
+        const conn_ = await conn.getConnection();
+        const saltRounds = 10; // Number of salt rounds
+        bcrypt.hash(newPassword, saltRounds,async (err, hash) => {
+            const insertQuery = "update tblusers set password=? where email=?";
+            const values = [hash,email];
+            const data=await conn_.execute(insertQuery, values); 
+            res.status(200).json({
+                statusCode: 200,
+                message: 'password has been updated',
+                data:data,
+                status: false
+            });
+        });
+    }else{
+        res.status(400).json({
+            statusCode: 400,
+            message: 'OTP doesnot matched',
+            data:[],
+            status: false
+        });
+    }
+}
+
 const checkLoginDetails=async(req,res)=>{
     const{userName,password}=req.body;
     console.log('all data ---',req.body);
@@ -202,5 +261,6 @@ const getDriverProfile=async(req,res)=>{
 }
 
 module.exports={
-    addUsersDetails,checkLoginDetails,getUser,getDriverName,getDriverProfile
+    addUsersDetails,checkLoginDetails,getUser,getDriverName,
+    getDriverProfile,sendOtp,updatePassword
 }
