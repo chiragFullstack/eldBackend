@@ -78,17 +78,17 @@ const getUser=async(req,res)=>{
 }
 
 const sendOtp=async(req,res)=>{
-    const email=parseInt(req.body.email);
+    const email=req.body.email;
     console.log('email',email);
     // 
     const conn_ = await conn.getConnection();
     const checkUsers = "select * from tblusers where email=?";
-    const usersValues = [user_Id];
+    const usersValues = [email];
     const [resultsUser] = await conn_.execute(checkUsers, usersValues);
     if(resultsUser.length==0){
          res.status(400).json({
             statusCode: 400,
-            message: 'Invalid Student ID',
+            message: 'Invalid Email-Id',
             data: [],
             status: false
         });
