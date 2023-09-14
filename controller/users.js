@@ -80,7 +80,6 @@ const getUser=async(req,res)=>{
 const sendOtp=async(req,res)=>{
     const email=req.body.email;
     console.log('email',email);
-    // 
     const conn_ = await conn.getConnection();
     const checkUsers = "select * from tblusers where email=?";
     const usersValues = [email];
@@ -136,6 +135,25 @@ const updatePassword=async(req,res)=>{
     }
 }
 
+
+const resetPassword=async(req,res)=>{
+    const {id,password}=req.body;
+    console.log(req.body);
+        const conn_ = await conn.getConnection();
+        const saltRounds = 10; // Number of salt rounds
+        let user_Id=parseInt(id);
+        bcrypt.hash(password, saltRounds,async (err, hash) => {
+            const insertQuery = "update tblusers set password=? where id=?";
+            const values = [hash,user_Id];
+            const data=await conn_.execute(insertQuery, values); 
+            res.status(200).json({
+                statusCode: 200,
+                message: 'password has been updated',
+                data:data,
+                status: false
+            });
+        });
+}
 const checkLoginDetails=async(req,res)=>{
     const{userName,password}=req.body;
     console.log('all data ---',req.body);
@@ -262,5 +280,5 @@ const getDriverProfile=async(req,res)=>{
 
 module.exports={
     addUsersDetails,checkLoginDetails,getUser,getDriverName,
-    getDriverProfile,sendOtp,updatePassword
+    getDriverProfile,sendOtp,updatePassword,resetPassword
 }

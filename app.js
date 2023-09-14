@@ -13,6 +13,9 @@ const login=require('./routes/user/login');
 const listUser=require('./routes/user/driverList');
 const otpSend=require('./routes/user/sendOTP');
 const changePassword=require('./routes/user/updateUserPassword');
+const resetPassword=require('./routes/user/resetPassword');
+
+
 
 const allDriverName=require('./routes/user/driverNameList');
 const driverProfile=require('./routes/user/driverProfile');
@@ -47,7 +50,7 @@ app.use('/api/register',registerUser);
 app.use('/api/login',login);
 app.use('/api/reset/',otpSend);
 app.use('/api/reset/',changePassword);
-
+app.use('/api/reset/',resetPassword);
 
 app.use('/api/driver',listUser);
 app.use('/api/driver',allDriverName);
