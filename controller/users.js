@@ -137,22 +137,37 @@ const updatePassword=async(req,res)=>{
 
 
 const resetPassword=async(req,res)=>{
-    const {id,password}=req.body;
+    const {id,oldPassword,newPassword}=req.body;
     console.log(req.body);
         const conn_ = await conn.getConnection();
         const saltRounds = 10; // Number of salt rounds
         let user_Id=parseInt(id);
-        bcrypt.hash(password, saltRounds,async (err, hash) => {
-            const insertQuery = "update tblusers set password=? where id=?";
-            const values = [hash,user_Id];
-            const data=await conn_.execute(insertQuery, values); 
-            res.status(200).json({
-                statusCode: 200,
-                message: 'password has been updated',
-                data:data,
+        const checkUsers = "select * from tblusers where id=?";
+        const usersValues = [user_Id];
+        const [resultsUser] = await conn_.execute(checkUsers, usersValues);
+        const savedPassword = resultsUser[0].password;
+        const passwordMatch = await bcrypt.compare(oldPassword, savedPassword);
+        if(passwordMatch){
+            bcrypt.hash(newPassword, saltRounds,async (err, hash) => {
+                const insertQuery = "update tblusers set password=? where id=?";
+                const values = [hash,user_Id];
+                const data=await conn_.execute(insertQuery, values); 
+                res.status(200).json({
+                    statusCode: 200,
+                    message: 'password has been updated',
+                    data:data,
+                    status: true
+                });
+            });
+        }else{
+            res.status(400).json({
+                statusCode: 400,
+                message: 'Old Password is not Matched ',
+                data:[],
                 status: false
             });
-        });
+        }
+        
 }
 const checkLoginDetails=async(req,res)=>{
     const{userName,password}=req.body;
