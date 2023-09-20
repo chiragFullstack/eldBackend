@@ -39,6 +39,8 @@ const editVehicleDetails=require('./routes/vehicle/editVehicle');
 const unAssignedVehicleList=require('./routes/vehicle/getVehiclelistForAssign');
 const assignDrivertoVehicle=require('./routes/vehicle/assignDriver');
 
+
+const attendence=require('./routes/Attendence/addAttendence');
 const app=express();
 app.use(express.json());
 app.use(cors());
@@ -75,7 +77,10 @@ app.use('/api/vehicle',editVehicleDetails);
 app.use('/api/vehicle',unAssignedVehicleList);
 app.use('/api/vehicle',assignDrivertoVehicle)
 
-const PORT=process.env.PORT|5000;
+
+app.use('/api/driver',attendence);
+
+const PORT=process.env.PORT||5000;
 
 app.listen(PORT,async()=>{
     console.log('server is running');

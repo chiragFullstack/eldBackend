@@ -163,7 +163,7 @@ const resetPassword=async(req,res)=>{
             res.status(400).json({
                 statusCode: 400,
                 message: 'Old Password is not Matched ',
-                data:[],
+                data:[],    
                 status: false
             });
         }
