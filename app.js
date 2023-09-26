@@ -41,6 +41,9 @@ const assignDrivertoVehicle=require('./routes/vehicle/assignDriver');
 
 
 const attendence=require('./routes/Attendence/addAttendence');
+const getattendence=require('./routes/Attendence/getAttendence');
+
+
 const app=express();
 app.use(express.json());
 app.use(cors());
@@ -79,6 +82,8 @@ app.use('/api/vehicle',assignDrivertoVehicle)
 
 
 app.use('/api/driver',attendence);
+app.use('/api/driver',getattendence);
+
 
 const PORT=process.env.PORT||5000;
 
