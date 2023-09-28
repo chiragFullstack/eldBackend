@@ -5,6 +5,10 @@ const multer = require('multer');
 const cors=require('cors');
 const http=require('http');
 
+//library to create an cron job in node 
+let cron = require('node-cron');
+
+
 const conn=require('./connection');
 
 // registeration of users 
@@ -91,3 +95,6 @@ app.listen(PORT,async()=>{
     console.log('server is running');
 });
 
+cron.schedule('* * * * * *', () => {
+    console.log('running every minute to 1 from 5');
+  });

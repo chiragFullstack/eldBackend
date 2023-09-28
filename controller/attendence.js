@@ -50,16 +50,15 @@ const addAttendenceRecord=async(req,res)=>{
 
 const getAttendenceRecord=async(req,res)=>{
     const {userId, fromdate, todate} =req.query;
-    
     const conn_ = await conn.getConnection();
-    const checkUsers = "select 	VIN, Latitude, Longitude, AttendenceType, UserId, RecordDate from tblAttendence where UserId=? && RecordDate>=? && RecordDate<=? order by RecordDate DESC";
+    const checkUsers = "select 	VIN, Latitude, Longitude, AttendenceType, UserId, DATE(RecordDate) from tblAttendence where UserId=? && RecordDate>=? && RecordDate<=? order by RecordDate DESC";
     //const checkUsers = "select * from tblAttendence";
    const usersValues = [parseInt(userId), fromdate,todate];
     const [resultsUser] = await conn_.execute(checkUsers,usersValues);
     if(resultsUser.length==0){
-         res.status(400).json({
-            statusCode: 400,
-            message: 'Invalid Arguments',
+         res.status(200).json({
+            statusCode: 200,
+            message: 'Record Not matched',
             data: [],
             status: false
         });
