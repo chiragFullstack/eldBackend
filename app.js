@@ -44,6 +44,9 @@ const unAssignedVehicleList=require('./routes/vehicle/getVehiclelistForAssign');
 const assignDrivertoVehicle=require('./routes/vehicle/assignDriver');
 
 
+const vehicleLogByUserId=require('./routes/vehiclelog/getallLogbyUserId');
+const vehicleLogByDate=require('./routes/vehiclelog/getallLogbyDate');
+
 const attendence=require('./routes/Attendence/addAttendence');
 const getattendence=require('./routes/Attendence/getAttendence');
 
@@ -88,6 +91,8 @@ app.use('/api/vehicle',assignDrivertoVehicle)
 app.use('/api/driver',attendence);
 app.use('/api/driver',getattendence);
 
+app.use('/api/vehicleLog',vehicleLogByUserId);
+app.use('/api/vehicleLog',vehicleLogByDate);
 
 const PORT=process.env.PORT||5000;
 
