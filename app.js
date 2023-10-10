@@ -49,6 +49,10 @@ const vehicleLogByDate=require('./routes/vehiclelog/getallLogbyDate');
 
 const attendence=require('./routes/Attendence/addAttendence');
 const getattendence=require('./routes/Attendence/getAttendence');
+const updateDriver=require('./routes/Attendence/updateCoDriver');
+const updateTripNo=require('./routes/Attendence/updateTripNo');
+const updateShippingAddress=require('./routes/Attendence/updateShippingAddress'); 
+
 
 
 const app=express();
@@ -90,6 +94,11 @@ app.use('/api/vehicle',assignDrivertoVehicle)
 
 app.use('/api/driver',attendence);
 app.use('/api/driver',getattendence);
+app.use('/api/driver',updateDriver);
+app.use('/api/driver',updateTripNo);
+app.use('/api/driver',updateShippingAddress);
+
+
 
 app.use('/api/vehicleLog',vehicleLogByUserId);
 app.use('/api/vehicleLog',vehicleLogByDate);
