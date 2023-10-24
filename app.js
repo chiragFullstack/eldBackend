@@ -47,6 +47,9 @@ const assignDrivertoVehicle=require('./routes/vehicle/assignDriver');
 const vehicleLogByUserId=require('./routes/vehiclelog/getallLogbyUserId');
 const vehicleLogByDate=require('./routes/vehiclelog/getallLogbyDate');
 
+const vehicleLogReport=require('./routes/vehiclelog/logreport');
+
+
 const attendence=require('./routes/Attendence/addAttendence');
 const getattendence=require('./routes/Attendence/getAttendence');
 const updateDriver=require('./routes/Attendence/updateCoDriver');
@@ -103,6 +106,8 @@ app.use('/api/driver',updateShippingAddress);
 app.use('/api/vehicleLog',vehicleLogByUserId);
 app.use('/api/vehicleLog',vehicleLogByDate);
 
+app.use('/api/report',vehicleLogReport);
+
 const PORT=process.env.PORT||5000;
 
 app.listen(PORT,async()=>{
@@ -110,5 +115,5 @@ app.listen(PORT,async()=>{
 });
 
 cron.schedule('* * * * * *', () => {
-    console.log('running every minute to 1 from 5');
+    //console.log('running every minute to 1 from 5');
   });

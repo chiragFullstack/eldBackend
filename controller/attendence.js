@@ -2,6 +2,30 @@ const { parse } = require('dotenv');
 const conn=require('../connection');
 const moment = require('moment');
 
+const checkAttendenceRecord=async(req,res)=>{    
+const {userId} =req.query;
+    const conn_ = await conn.getConnection();
+    const checkUsers = "select * from tblAttendence where UserId=?";
+    //const checkUsers = "select * from tblAttendence";
+   const usersValues = [parseInt(userId)];
+    const [resultsUser] = await conn_.execute(checkUsers,usersValues);
+    if(resultsUser.length==0){
+         res.status(200).json({
+            statusCode: 200,
+            message: 'Record Not matched',
+            data: [],
+            status: false
+        });
+    }else{
+        console.log(resultsUser.length)
+        res.status(200).json({
+            statusCode: 200,
+            message: 'Attendence Record ',
+            data:resultsUser,
+            status: true
+        });
+    }    
+}
 
 const addAttendenceRecord=async(req,res)=>{    
     const{Status,VIN,Speed,Odometer,EngineHours,Latitude,Longitude,Location,AttendenceType,UserId,coDriver,tripNo,shippingAddress,RecordDate}=req.body;
@@ -10,11 +34,9 @@ const addAttendenceRecord=async(req,res)=>{
         // Format the date and time
         var utcMoment = moment.utc();
         const formattedDateTime = new Date( utcMoment.format() );
-
         const currentTime = moment().format();
         const formattedTime = moment().format('HH:mm:ss');
         console.log('Formatted Time:', formattedTime);
-        
         const conn_ = await conn.getConnection(); // Get a connection from the pool
         const insertVehicle = "INSERT INTO tblAttendence(Status,VIN,Speed,Odometer,EngineHours,Latitude,Longitude,Location,AttendenceType,UserId,coDriver,tripNo,shippingAddress,RecordDate,timeRecord) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         const vehicleValues = [Status,VIN,Speed,Odometer,EngineHours,Latitude,Longitude,Location,AttendenceType,UserId,coDriver,tripNo,shippingAddress,formattedDateTime,formattedTime];
@@ -160,7 +182,7 @@ const updateShippingAddress=async(req,res)=>{
 const getAttendenceRecord=async(req,res)=>{
     const {userId, fromdate, todate} =req.query;
     const conn_ = await conn.getConnection();
-    const checkUsers = "select 	VIN, Latitude, Longitude, AttendenceType, UserId, DATE(RecordDate) from tblAttendence where UserId=? && RecordDate>=? && RecordDate<=? order by RecordDate DESC";
+    const checkUsers = "select  location,odometer, AttendenceType,EngineHours, UserId,timeRecord, DATE(RecordDate) from tblAttendence where UserId=? && RecordDate>=? && RecordDate<=? order by RecordDate DESC";
     //const checkUsers = "select * from tblAttendence";
    const usersValues = [parseInt(userId), fromdate,todate];
     const [resultsUser] = await conn_.execute(checkUsers,usersValues);
@@ -172,6 +194,14 @@ const getAttendenceRecord=async(req,res)=>{
             status: false
         });
     }else{
+        const newKey = "Origin";
+        const newValue = "Manual";
+
+        // Iterate through the array and add the new key-value pair to each object
+        for (const obj of resultsUser) {
+             obj[newKey] = newValue;
+        }
+        console.log(resultsUser);
         res.status(200).json({
             statusCode: 200,
             message: 'Attendence Record ',
@@ -182,5 +212,5 @@ const getAttendenceRecord=async(req,res)=>{
 }
 
 module.exports={
-    addAttendenceRecord,getAttendenceRecord,updateTripNo,updateCoDriver,updateShippingAddress
+    addAttendenceRecord,getAttendenceRecord,updateTripNo,updateCoDriver,updateShippingAddress,checkAttendenceRecord
 }
