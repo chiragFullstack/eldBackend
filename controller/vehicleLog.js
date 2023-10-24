@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const PDFDocument = require('pdfkit');
 const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs');
-const puppeteer = require('puppeteer');
+//const puppeteer = require('puppeteer');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const ChartJS = require('chart.js');
 
@@ -61,41 +61,41 @@ const generateGraph=async(req,res)=>{
     const width = 800;
     const height = 400;
     
-const chartCallback = () => {
-    // Create a new Chart.js instance
-    const chart = new ChartJS(width, height);
+// const chartCallback = () => {
+//     // Create a new Chart.js instance
+//     const chart = new ChartJS(width, height);
   
-    // Create your line chart data here
-    const data = {
-      labels: ['January', 'February', 'March', 'April', 'May'],
-      datasets: [
-        {
-          label: 'My Line Dataset',
-          data: [65, 59, 80, 81, 56],
-        },
-      ],
-    };
-    const config = {
-        type: 'line',
-        data: data,
-        options: {
-          plugins: {
-            beforeDraw: (chart, options) => {
-              const ctx = chart.ctx;
-              ctx.fillStyle = 'white'; // Background color
-              ctx.fillRect(0, 0, chart.width, chart.height);
-            },
-          },
-        },
-      };
-      chart.render(config);
-    };
+//     // Create your line chart data here
+//     const data = {
+//       labels: ['January', 'February', 'March', 'April', 'May'],
+//       datasets: [
+//         {
+//           label: 'My Line Dataset',
+//           data: [65, 59, 80, 81, 56],
+//         },
+//       ],
+//     };
+//     const config = {
+//         type: 'line',
+//         data: data,
+//         options: {
+//           plugins: {
+//             beforeDraw: (chart, options) => {
+//               const ctx = chart.ctx;
+//               ctx.fillStyle = 'white'; // Background color
+//               ctx.fillRect(0, 0, chart.width, chart.height);
+//             },
+//           },
+//         },
+//       };
+//       chart.render(config);
+//     };
      
-    const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, chartCallback });
-    (async () => {
-    const image = await chartJSNodeCanvas.renderToBuffer();
-    require('fs').writeFileSync('lineGraph.jpg', image);
-    })();
+//     const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, chartCallback });
+//     (async () => {
+//     const image = await chartJSNodeCanvas.renderToBuffer();
+//     require('fs').writeFileSync('lineGraph.jpg', image);
+//     })();
 }
 
 const generateLogReport=async(req,res)=>{
@@ -197,17 +197,17 @@ const generateLogReportWithPdf=async(req,res)=>{
             const finalHTML =await htmlTemplate.replace('{{tableData}}', tableRow).replace('{{tableDriverData}}', tableDriverdata);
             await fs.writeFileSync('output.html', finalHTML);
 
-            (async () => {
-                const browser = await puppeteer.launch();
-                const page = await browser.newPage();
+            // (async () => {
+            //     const browser = await puppeteer.launch();
+            //     const page = await browser.newPage();
               
-                await page.setContent(finalHTML);
-                await page.pdf({ path: 'output.pdf', format: 'A4' });
+            //     await page.setContent(finalHTML);
+            //     await page.pdf({ path: 'output.pdf', format: 'A4' });
               
-                await browser.close();
+            //     await browser.close();
             
-                console.log('PDF created successfully');
-            })();
+            //     console.log('PDF created successfully');
+            // })();
 
             console.log(resultsLog);
                     res.status(200).json({
