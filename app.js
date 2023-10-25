@@ -52,6 +52,7 @@ const vehicleLogReport=require('./routes/vehiclelog/logreport');
 
 const attendence=require('./routes/Attendence/addAttendence');
 const getattendence=require('./routes/Attendence/getAttendence');
+const getattendenceFull=require('./routes/Attendence/getAttendenceFull');
 const updateDriver=require('./routes/Attendence/updateCoDriver');
 const updateTripNo=require('./routes/Attendence/updateTripNo');
 const updateShippingAddress=require('./routes/Attendence/updateShippingAddress'); 
@@ -97,6 +98,7 @@ app.use('/api/vehicle',assignDrivertoVehicle)
 
 app.use('/api/driver',attendence);
 app.use('/api/driver',getattendence);
+app.use('/api/driver',getattendenceFull);
 app.use('/api/driver',updateDriver);
 app.use('/api/driver',updateTripNo);
 app.use('/api/driver',updateShippingAddress);

@@ -179,13 +179,69 @@ const updateShippingAddress=async(req,res)=>{
     } 
 }
 
+
+const getAttendenceRecordToday=async(req,res)=>{
+    const {userId, fromdate} =req.query;
+    const conn_ = await conn.getConnection();
+    let checkUsers='';
+    let usersValues=[];
+    let [resultsUser]=[];
+    const currentDate = new Date();
+    const oneDayLater = new Date(fromdate);
+   // oneDayLater.setDate(oneDayLater.getDate() + 1);
+   const formattedDate = oneDayLater.toISOString().split('T')[0];
+    console.log('current date =---',formattedDate);
+    if (fromdate !== "") {
+        checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId="+parseInt(userId)+" &&  DATE(RecordDate) =+DATE(NOW())";
+        [resultsUser] = await conn_.execute(checkUsers);
+      }
+    if(resultsUser.length==0){
+         res.status(200).json({
+            statusCode: 200,
+            message: 'Record Not matched',
+            data: [],
+            status: false
+        });
+    }else{
+        const newKey = "Origin";
+        const newValue = "Manual";
+
+        // Iterate through the array and add the new key-value pair to each object
+        for (const obj of resultsUser) {
+             obj[newKey] = newValue;
+        }
+        console.log(resultsUser);
+        res.status(200).json({
+            statusCode: 200,
+            message: 'Attendence Record ',
+            data:resultsUser,
+            status: true
+        });
+    }
+}
+
 const getAttendenceRecord=async(req,res)=>{
     const {userId, fromdate, todate} =req.query;
     const conn_ = await conn.getConnection();
-    const checkUsers = "select  location,odometer, AttendenceType,EngineHours, UserId,timeRecord, DATE(RecordDate) from tblAttendence where UserId=? && RecordDate>=? && RecordDate<=? order by RecordDate DESC";
-    //const checkUsers = "select * from tblAttendence";
-   const usersValues = [parseInt(userId), fromdate,todate];
-    const [resultsUser] = await conn_.execute(checkUsers,usersValues);
+    let checkUsers='';
+    let usersValues=[];
+    let [resultsUser]=[];
+    console.log(fromdate);
+    if (fromdate !== "") {
+        checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId=? && RecordDate>=?";
+        usersValues = [parseInt(userId), fromdate];
+      
+        if (todate) {
+          checkUsers += " && DATE(RecordDate)<=?";
+          console.log('rinnung');
+          usersValues.push(todate);
+        }
+      
+        checkUsers += " order by RecordDate DESC";
+      
+        [resultsUser] = await conn_.execute(checkUsers, usersValues);
+      }
+  
     if(resultsUser.length==0){
          res.status(200).json({
             statusCode: 200,
@@ -212,5 +268,5 @@ const getAttendenceRecord=async(req,res)=>{
 }
 
 module.exports={
-    addAttendenceRecord,getAttendenceRecord,updateTripNo,updateCoDriver,updateShippingAddress,checkAttendenceRecord
+    addAttendenceRecord,getAttendenceRecord,updateTripNo,updateCoDriver,updateShippingAddress,checkAttendenceRecord,getAttendenceRecordToday
 }
