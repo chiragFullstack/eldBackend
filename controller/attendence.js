@@ -232,14 +232,31 @@ const getAttendenceRecord=async(req,res)=>{
     let usersValues=[];
     let [resultsUser]=[];
     console.log(fromdate);
+      
     if (fromdate !== "") {
+          // Create a Moment.js object for the specific date "2023-10-23"
+          const inputDate = moment(fromdate, "YYYY-MM-DD");
+
+          // Convert to UTC
+          const utcDate = inputDate.utc();
+  
+          // Format the UTC date
+          const formattedUTCfromDate = utcDate.format('YYYY-MM-DD');
         checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId=? && RecordDate>=?";
-        usersValues = [parseInt(userId), fromdate];
+        usersValues = [parseInt(userId), formattedUTCfromDate];
       
         if (todate) {
+            // Create a Moment.js object for the specific date "2023-10-23"
+          const inputDate2 = moment(fromdate, "YYYY-MM-DD");
+
+          // Convert to UTC
+          const utcDate2 = inputDate2.utc();
+  
+          // Format the UTC date
+          const formattedUTCToDate = utcDate2.format('YYYY-MM-DD');
           checkUsers += " && DATE(RecordDate)<=?";
           console.log('rinnung');
-          usersValues.push(todate);
+          usersValues.push(todformattedUTCToDateate);
         }
       
         checkUsers += " order by RecordDate DESC";
