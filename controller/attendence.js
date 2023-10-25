@@ -186,14 +186,19 @@ const getAttendenceRecordToday=async(req,res)=>{
     let checkUsers='';
     let usersValues=[];
     let [resultsUser]=[];
-    const currentDate = new Date();
-    const oneDayLater = new Date(fromdate);
-   // oneDayLater.setDate(oneDayLater.getDate() + 1);
-   const formattedDate = oneDayLater.toISOString().split('T')[0];
-    console.log('current date =---',formattedDate);
+        // Create a Moment.js object for the specific date "2023-10-23"
+        const inputDate = moment(fromdate, "YYYY-MM-DD");
+
+        // Convert to UTC
+        const utcDate = inputDate.utc();
+
+        // Format the UTC date
+        const formattedUTCDate = utcDate.format('YYYY-MM-DD');
+        console.log(formattedUTCDate);
     if (fromdate !== "") {
-        checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId="+parseInt(userId)+" && DATE(STR_TO_DATE(RecordDate, '%Y-%m-%d')) = DATE(NOW());";
-        [resultsUser] = await conn_.execute(checkUsers);
+        checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId=? && DATE(RecordDate) =?";
+        usersValues = [parseInt(userId), formattedUTCDate];
+        [resultsUser] = await conn_.execute(checkUsers,usersValues);
       }
     if(resultsUser.length==0){
          res.status(200).json({
