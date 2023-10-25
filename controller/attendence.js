@@ -192,7 +192,7 @@ const getAttendenceRecordToday=async(req,res)=>{
    const formattedDate = oneDayLater.toISOString().split('T')[0];
     console.log('current date =---',formattedDate);
     if (fromdate !== "") {
-        checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId="+parseInt(userId)+" &&  DATE(RecordDate) =+DATE(NOW())";
+        checkUsers = "select location, odometer, AttendenceType, EngineHours, UserId, timeRecord, DATE(RecordDate) as date from tblAttendence where UserId="+parseInt(userId)+" && DATE(STR_TO_DATE(RecordDate, '%Y-%m-%d')) = DATE(NOW());";
         [resultsUser] = await conn_.execute(checkUsers);
       }
     if(resultsUser.length==0){
