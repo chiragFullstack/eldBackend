@@ -48,7 +48,9 @@ const vehicleLogByUserId=require('./routes/vehiclelog/getallLogbyUserId');
 const vehicleLogByDate=require('./routes/vehiclelog/getallLogbyDate');
 
 const vehicleLogReport=require('./routes/vehiclelog/logreport');
-
+const pendingLogReport=require('./routes/Attendence/pendingLog');
+const certifiedLogReport=require('./routes/Attendence/certifiedLog');
+const updateLog=require('./routes/Attendence/updateLog');
 
 const attendence=require('./routes/Attendence/addAttendence');
 const getattendence=require('./routes/Attendence/getAttendence');
@@ -108,7 +110,11 @@ app.use('/api/driver',updateShippingAddress);
 app.use('/api/vehicleLog',vehicleLogByUserId);
 app.use('/api/vehicleLog',vehicleLogByDate);
 
+
 app.use('/api/report',vehicleLogReport);
+app.use('/api/report',pendingLogReport);
+app.use('/api/report',certifiedLogReport);
+app.use('/api/report',updateLog);
 
 const PORT=process.env.PORT||5000;
 

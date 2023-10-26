@@ -188,10 +188,8 @@ const getAttendenceRecordToday=async(req,res)=>{
     let [resultsUser]=[];
         // Create a Moment.js object for the specific date "2023-10-23"
         const inputDate = moment(fromdate, "YYYY-MM-DD");
-
         // Convert to UTC
         const utcDate = inputDate.utc();
-
         // Format the UTC date
         const formattedUTCDate = utcDate.format('YYYY-MM-DD');
         console.log(formattedUTCDate);
@@ -289,6 +287,82 @@ const getAttendenceRecord=async(req,res)=>{
     }
 }
 
+const getPendingAttendenceLog=async(req,res)=>{
+    const {userId} =req.query;
+    const conn_ = await conn.getConnection();
+    let checkUsers='';
+    let verified=0;
+    let usersValues=[];
+    let [resultsUser]=[];
+     checkUsers = "select * from tblAttendence where UserId=? && verified=? ORDER BY RecordDate DESC";
+     usersValues = [parseInt(userId),verified];
+     [resultsUser] = await conn_.execute(checkUsers, usersValues);      
+    if(resultsUser.length==0){
+         res.status(400).json({
+            statusCode: 400,
+            message: 'Record Not matched',
+            data: [],
+            status: false
+        });
+    }else{
+        res.status(200).json({
+            statusCode: 200,
+            message: 'Attendence Record ',
+            data:resultsUser,
+            status: true
+        });
+    }
+}
+
+
+const getCertifiedAttendenceLog=async(req,res)=>{
+    const {userId} =req.query;
+    const conn_ = await conn.getConnection();
+    let checkUsers='';
+    let verified=1;
+    let usersValues=[];
+    let [resultsUser]=[];
+     checkUsers = "select * from tblAttendence where UserId=? && verified=? ORDER BY RecordDate DESC";
+     usersValues = [parseInt(userId),verified];
+     [resultsUser] = await conn_.execute(checkUsers, usersValues);      
+    if(resultsUser.length==0){
+         res.status(200).json({
+            statusCode: 200,
+            message: 'Record is Empty',
+            data: [],
+            status: true
+        });
+    }else{
+        res.status(200).json({
+            statusCode: 200,
+            message: 'Attendence Record ',
+            data:resultsUser,
+            status: true
+        });
+    }
+}
+
+
+const updatePendingLog=async(req,res)=>{
+    const id =parseInt(req.body.id);
+    console.log(id);
+    const conn_ = await conn.getConnection();
+    let checkUsers='';
+    let verified=1;
+    let usersValues=[];
+    let [resultsUser]=[];
+     checkUsers = "update tblAttendence set verified=? where id=?";
+     usersValues = [verified,parseInt(id)];
+     [resultsUser] = await conn_.execute(checkUsers, usersValues);      
+        res.status(200).json({
+            statusCode: 200,
+            message: 'Attendence Record Certified',
+            data:resultsUser,
+            status: true
+        });
+}
 module.exports={
-    addAttendenceRecord,getAttendenceRecord,updateTripNo,updateCoDriver,updateShippingAddress,checkAttendenceRecord,getAttendenceRecordToday
+    addAttendenceRecord,getAttendenceRecord,updateTripNo,updateCoDriver,
+    updateShippingAddress,checkAttendenceRecord,getAttendenceRecordToday,
+    getPendingAttendenceLog,getCertifiedAttendenceLog,updatePendingLog
 }
