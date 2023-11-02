@@ -167,8 +167,8 @@ const resetPassword=async(req,res)=>{
                 status: false
             });
         }
-        
 }
+
 const checkLoginDetails=async(req,res)=>{
     const{userName,password}=req.body;
     console.log('all data ---',req.body);
@@ -189,12 +189,31 @@ const checkLoginDetails=async(req,res)=>{
       }else{
         const savedPassword = resultsUser[0].password;
         const passwordMatch = await bcrypt.compare(password, savedPassword);
+        let userId=parseInt(resultsUser[0].id);
+
+        const checkCodriver = "select coDriver, tripNo, shippingAddress from tblAttendence where UserId=? && coDriver!=? || tripNo!=? || shippingAddress!=?";
+        const usersValues = [userName,'','',''];
+        const [resultsCoDriver] = await conn_.execute(checkCodriver, usersValues);
+        console.log(resultsCoDriver.length);
+        let coDriverName=resultsCoDriver[resultsCoDriver.length-1].coDriver;
+        let tripNo=resultsCoDriver[resultsCoDriver.length-1].tripNo;
+        let shippingAddress=resultsCoDriver[resultsCoDriver.length-1].shippingAddress;
+
+        let fullData=[];
+            let obj={};
+            obj["id"]=resultsUser[0].id;
+            obj["userName"]=resultsUser[0].userName;
+            obj["role"]=resultsUser[0].role;
+            obj["email"]=resultsUser[0].email;
+            obj["coDriver"]=coDriverName;
+            obj["tripNo"]=tripNo;
+            obj["shippingAddress"]=shippingAddress;
+            fullData.push(obj);
         if (passwordMatch) {
-            console.log('Password is correct', resultsUser[0]);
             res.status(200).json({
             statusCode: 200,
             message: 'Valid user name and Password',
-            data: resultsUser[0],
+            data: fullData,
             status: true
             });
         } else {

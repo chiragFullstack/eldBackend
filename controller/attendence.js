@@ -344,20 +344,27 @@ const getCertifiedAttendenceLog=async(req,res)=>{
 
 
 const updatePendingLog=async(req,res)=>{
-    const id =parseInt(req.body.id);
+    const id =req.body.id;
     console.log(id);
     const conn_ = await conn.getConnection();
     let checkUsers='';
     let verified=1;
     let usersValues=[];
     let [resultsUser]=[];
-     checkUsers = "update tblAttendence set verified=? where id=?";
-     usersValues = [verified,parseInt(id)];
-     [resultsUser] = await conn_.execute(checkUsers, usersValues);      
+    let allId=id.split(',');
+    let count=0;
+    for(let x=0;x<allId.length;x++){
+        checkUsers = "update tblAttendence set verified=? where id=?";
+        usersValues = [verified,parseInt(allId[x])];
+        [resultsUser] = await conn_.execute(checkUsers, usersValues);
+        if(resultsUser){
+            count++;
+        }
+    }      
         res.status(200).json({
             statusCode: 200,
             message: 'Attendence Record Certified',
-            data:resultsUser,
+            data:count+" Record Updated",
             status: true
         });
 }

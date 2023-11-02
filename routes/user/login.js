@@ -8,5 +8,5 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 
-router.post('/checkLogin',checkLoginDetails);
+router.post('/checkLogin',upload.none(),checkLoginDetails);
 module.exports=router;
