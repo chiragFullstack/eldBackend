@@ -4,9 +4,10 @@ const moment = require('moment');
 
 
 const addOrganizationDetails=async(req,res)=>{
+    console.log('111----');
     const{orgName,contactNo,userName,password,email,companyAddress,McNo}=req.body;
     const status=0;
-    console.log(req.body);
+    console.log('----',req.body);
      //insert the data into the user Table 
     const saltRounds = 10; // Number of salt rounds
     bcrypt.hash(password, saltRounds,async (err, hash) => {
@@ -22,6 +23,7 @@ const addOrganizationDetails=async(req,res)=>{
                 const values = [userName, hash,"organization",email,status];
                 const [resultsUser]=await conn_.execute(insertQuery, values);
                 console.log('Insertion successful:', resultsUser.insertId);
+
                 const User_Id=parseInt(resultsUser.insertId);
                 const insertOrg = "INSERT INTO tblorganization_details(name,contact_no,Address,MCno,email,userId) VALUES (?,?,?,?,?,?)";
                 const orgValues = [orgName,contactNo,companyAddress,McNo,email,User_Id];
@@ -103,7 +105,8 @@ const organizationDetails=async(req,res)=>{
         if(resultsOrganization){
             res.status(200).json({
                 statusCode:200,
-                message:resultsOrganization,
+                message:'matched',
+                data:resultsOrganization,
                 status:true
             });
         }else{

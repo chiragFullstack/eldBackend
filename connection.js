@@ -7,11 +7,21 @@ const mysql = require('mysql2/promise');
 //     database: 'eld'
 // });
 
+    // const connection = mysql.createPool({
+    //     host: '208.109.67.112', //162.213.251.52
+    //     user: 'Yadbir',//'arcopgcy_admin',   //adminEld admin edridhzx_admin
+    //     password:'Canteen123!@#', //'Chirag!@#123'   1OkMChGhGOKK //
+    //     database:'Punjabicanteen'  //edridhzx_EldBackend
+    // });
+
     const connection = mysql.createPool({
-        host: '208.109.67.112',
-        user: 'Yadbir',//'arcopgcy_admin',   //adminEld
-        password:'Canteen123!@#', //'Chirag!@#123' //
-        database:'Punjabicanteen'
+        host: '162.213.251.52', //162.213.251.52
+        user: 'edridhzx_admin',//'arcopgcy_admin',   //adminEld admin 
+        password:'1OkMChGhGOKK', //'Chirag!@#123'   1OkMChGhGOKK //
+        database:'edridhzx_EldBackend'  //
     });
+    
+
+    
 
 module.exports = connection;

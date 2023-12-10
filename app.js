@@ -7,7 +7,7 @@ const http=require('http');
 
 //library to create an cron job in node 
 let cron = require('node-cron');
-
+const moment = require('moment-timezone');
 
 const conn=require('./connection');
 
@@ -60,13 +60,13 @@ const updateTripNo=require('./routes/Attendence/updateTripNo');
 const updateShippingAddress=require('./routes/Attendence/updateShippingAddress'); 
 
 
+const totalHour=require('./routes/CalculateHour/drivingHourCalculate');
+
 
 const app=express();
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
-
-
 
 app.use('/api/register',registerUser);
 app.use('/api/login',login);
@@ -106,6 +106,7 @@ app.use('/api/driver',updateTripNo);
 app.use('/api/driver',updateShippingAddress);
 
 
+app.use('/api/driver',totalHour);
 
 app.use('/api/vehicleLog',vehicleLogByUserId);
 app.use('/api/vehicleLog',vehicleLogByDate);
@@ -122,6 +123,58 @@ app.listen(PORT,async()=>{
     console.log('server is running');
 });
 
-cron.schedule('* * * * * *', () => {
-    //console.log('running every minute to 1 from 5');
-  });
+
+function calculateDrivingHours(data) {
+    let totalDrivingTime = 0;
+    let drivingStartTime = null;
+  
+    for (let i = 0; i < data.length; i++) {
+      const { status, datetime } = data[i];
+      const currentTime = moment(datetime, "YYYY-MM-DDTHH:mm:ss");
+  
+      if (status === 'DRIVE') {
+        drivingStartTime = currentTime;
+      } else if (status !== 'DRIVE' && drivingStartTime !== null) {
+        const drivingEndTime = currentTime;
+        const timeDiffInSeconds = (drivingEndTime - drivingStartTime) / 1000; // Convert milliseconds to seconds
+        totalDrivingTime += timeDiffInSeconds;
+        drivingStartTime = null; // Reset driving start time
+      }
+    }
+  
+    const totalHours = Math.floor(totalDrivingTime / 3600); // Calculate total hours
+    const totalMinutes = Math.floor((totalDrivingTime % 3600) / 60); // Calculate remaining minutes
+  
+    return `${totalHours}:${totalMinutes < 10 ? '0' : ''}${totalMinutes}`;
+  }
+
+  
+cron.schedule('* * * * * *', async() => {
+   try{
+    const conn_ = await conn.getConnection();
+    // Get the current time
+    const query="SELECT r.* FROM tblAttendence r JOIN ( SELECT MAX(RecordDate) as max_datetime FROM tblAttendence WHERE AttendenceType = 'onDuty' AND UserID = 1 ) AS max_entry ON r.RecordDate = max_entry.max_datetime WHERE r.AttendenceType = 'onDuty' AND r.UserID = 1";
+    const [results] = await conn_.query(query);
+    let startId=parseInt(results[0].id);
+    
+    const queryData=`SELECT AttendenceType,RecordDate from tblAttendence where id>=${startId} AND UserID = 1`;
+    const [resultsData] = await conn_.query(queryData);
+    const shiftDataWithDates = resultsData.map(entry => ({
+        ...entry,
+        datetime: moment(entry.datetime, "YYYY-MM-DDTHH:mm:ss"),
+      }));
+  // Check if the last entry is "drive" and the difference is greater than 7 hours 45 minutes
+  const lastEntry = shiftDataWithDates[shiftDataWithDates.length - 1];
+  const currentTime = moment();
+  const timeDiffLastEntry = currentTime.diff(lastEntry.datetime, 'seconds');
+    console.log(resultsData);
+  if (lastEntry.status === 'DRIVE' && timeDiffLastEntry > (7 * 3600 + 45 * 60)) {
+    console.log("Last drive entry is more than 7 hours 45 minutes ago.");
+  }
+
+
+   }catch(err){
+    console.error(err);
+   }
+
+});
