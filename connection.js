@@ -14,14 +14,19 @@ const mysql = require('mysql2/promise');
     //     database:'Punjabicanteen'  //edridhzx_EldBackend
     // });
 
+    // const connection = mysql.createPool({
+    //     host: '162.213.251.52', //162.213.251.52
+    //     user: 'edridhzx_admin',//'arcopgcy_admin',   //adminEld admin 
+    //     password:'1OkMChGhGOKK', //'Chirag!@#123'   1OkMChGhGOKK //
+    //     database:'edridhzx_EldBackend'  //
+    // });
+    
     const connection = mysql.createPool({
-        host: '162.213.251.52', //162.213.251.52
-        user: 'edridhzx_admin',//'arcopgcy_admin',   //adminEld admin 
-        password:'1OkMChGhGOKK', //'Chirag!@#123'   1OkMChGhGOKK //
-        database:'edridhzx_EldBackend'  //
+        host: '162.255.116.142', //162.213.251.52
+        user: 'root',//'arcopgcy_admin',   //adminEld admin edridhzx_admin
+        password:'CI0Lmx.5*tO)', //'Chirag!@#123'   1OkMChGhGOKK //
+        database:'Punjabicanteen'  //edridhzx_EldBackend
     });
-    
 
-    
 
 module.exports = connection;
