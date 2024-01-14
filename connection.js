@@ -15,7 +15,7 @@ const mysql = require('mysql2/promise');
     // });
 
     const connection = mysql.createPool({
-        host: '162.255.116.142:2087', //162.213.251.52
+        host: '162.255.116.142', //162.213.251.52
         user: 'edrivebook_gill',//'arcopgcy_admin',   //adminEld admin edridhzx_admin
         password:'bOXq4NOi=*^S', //'Chirag!@#123'   1OkMChGhGOKK //
         database:'edrivebook_punjabicanteen'  //edridhzx_EldBackend
