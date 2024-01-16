@@ -9,7 +9,7 @@ const http=require('http');
 let cron = require('node-cron');
 const moment = require('moment-timezone');
 
-const conn=require('./connection');
+const establishConnection = require('./connection');
 
 // registeration of users 
 const registerUser=require('./routes/user/registerUser');
@@ -149,32 +149,68 @@ function calculateDrivingHours(data) {
   }
 
   
-cron.schedule('* * * * * *', async() => {
-   try{
-    const conn_ = await conn.getConnection();
-    // Get the current time
-    const query="SELECT r.* FROM tblAttendence r JOIN ( SELECT MAX(RecordDate) as max_datetime FROM tblAttendence WHERE AttendenceType = 'onDuty' AND UserID = 1 ) AS max_entry ON r.RecordDate = max_entry.max_datetime WHERE r.AttendenceType = 'onDuty' AND r.UserID = 1";
-    const [results] = await conn_.query(query);
-    let startId=parseInt(results[0].id);
+// cron.schedule('* * * * * *', async() => {
+//    try{
+//     const conn_ = await conn.getConnection();
+//     // Get the current time
+//     const query="SELECT r.* FROM tblAttendence r JOIN ( SELECT MAX(RecordDate) as max_datetime FROM tblAttendence WHERE AttendenceType = 'onDuty' AND UserID = 1 ) AS max_entry ON r.RecordDate = max_entry.max_datetime WHERE r.AttendenceType = 'onDuty' AND r.UserID = 1";
+//     const [results] = await conn_.query(query);
+//     let startId=parseInt(results[0].id);
     
-    const queryData=`SELECT AttendenceType,RecordDate from tblAttendence where id>=${startId} AND UserID = 1`;
-    const [resultsData] = await conn_.query(queryData);
+//     const queryData=`SELECT AttendenceType,RecordDate from tblAttendence where id>=${startId} AND UserID = 1`;
+//     const [resultsData] = await conn_.query(queryData);
+//     const shiftDataWithDates = resultsData.map(entry => ({
+//         ...entry,
+//         datetime: moment(entry.datetime, "YYYY-MM-DDTHH:mm:ss"),
+//       }));
+//   // Check if the last entry is "drive" and the difference is greater than 7 hours 45 minutes
+//   const lastEntry = shiftDataWithDates[shiftDataWithDates.length - 1];
+//   const currentTime = moment();
+//   const timeDiffLastEntry = currentTime.diff(lastEntry.datetime, 'seconds');
+//     console.log(resultsData);
+//   if (lastEntry.status === 'DRIVE' && timeDiffLastEntry > (7 * 3600 + 45 * 60)) {
+//     console.log("Last drive entry is more than 7 hours 45 minutes ago.");
+//   }
+
+
+//    }catch(err){
+//     console.error(err);
+//    }
+
+// });
+
+
+cron.schedule('* * * * * *', async () => {
+  try {
+    const conn = await establishConnection(); // Establish database connection
+
+    const query = "SELECT r.* FROM tblAttendence r JOIN ( SELECT MAX(RecordDate) as max_datetime FROM tblAttendence WHERE AttendenceType = 'onDuty' AND UserID = 1 ) AS max_entry ON r.RecordDate = max_entry.max_datetime WHERE r.AttendenceType = 'onDuty' AND r.UserID = 1";
+
+    const [results] = await conn.query(query);
+    let startId = parseInt(results[0].id);
+
+    const queryData = `SELECT AttendenceType, RecordDate from tblAttendence where id>=${startId} AND UserID = 1`;
+    const [resultsData] = await conn.query(queryData);
+
     const shiftDataWithDates = resultsData.map(entry => ({
-        ...entry,
-        datetime: moment(entry.datetime, "YYYY-MM-DDTHH:mm:ss"),
-      }));
-  // Check if the last entry is "drive" and the difference is greater than 7 hours 45 minutes
-  const lastEntry = shiftDataWithDates[shiftDataWithDates.length - 1];
-  const currentTime = moment();
-  const timeDiffLastEntry = currentTime.diff(lastEntry.datetime, 'seconds');
+      ...entry,
+      datetime: moment(entry.RecordDate, "YYYY-MM-DDTHH:mm:ss"), // Assuming the datetime field is RecordDate
+    }));
+
+    // Check if the last entry is "drive" and the difference is greater than 7 hours 45 minutes
+    const lastEntry = shiftDataWithDates[shiftDataWithDates.length - 1];
+    const currentTime = moment();
+    const timeDiffLastEntry = currentTime.diff(lastEntry.datetime, 'seconds');
+
     console.log(resultsData);
-  if (lastEntry.status === 'DRIVE' && timeDiffLastEntry > (7 * 3600 + 45 * 60)) {
-    console.log("Last drive entry is more than 7 hours 45 minutes ago.");
-  }
 
+    if (lastEntry.AttendenceType === 'DRIVE' && timeDiffLastEntry > (7 * 3600 + 45 * 60)) {
+      console.log("Last drive entry is more than 7 hours 45 minutes ago.");
+    }
 
-   }catch(err){
+    // Close the database connection
+    await conn.end();
+  } catch (err) {
     console.error(err);
-   }
-
+  }
 });

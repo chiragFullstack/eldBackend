@@ -1,5 +1,5 @@
 
-const conn=require('../connection');
+const establishConnection=require('../connection');
 const bcrypt = require('bcrypt');
 
 
@@ -59,22 +59,46 @@ const addUsersDetails=async(req,res)=>{
 }
 
 const getUser=async(req,res)=>{
-        conn.query('SELECT * FROM tblusers', (error, results) => {
-        if (error){
-            res.status(400).json({
-                statusCode:400,
-                message:error.message,
-                data:[],
-                status:true
-            });
-        }else{
-            res.status(200).json({
-                statusCode:200,
-                message:results,
-                status:true
-            });
-        }
-      });
+    //     conn.query('SELECT * FROM tblusers', (error, results) => {
+    //     if (error){
+    //         res.status(400).json({
+    //             statusCode:400,
+    //             message:error.message,
+    //             data:[],
+    //             status:true
+    //         });
+    //     }else{
+    //         res.status(200).json({
+    //             statusCode:200,
+    //             message:results,
+    //             status:true
+    //         });
+    //     }
+    //   });
+    
+    try {
+        const conn = await establishConnection(); // Establish database connection
+    
+        const [results] = await conn.query('SELECT * FROM tblusers');
+    
+        res.status(200).json({
+          statusCode: 200,
+          message: results,
+          status: true
+        });
+    
+        // Close the database connection
+        await conn.end();
+      } catch (error) {
+        console.error(error);
+        res.status(400).json({
+          statusCode: 400,
+          message: error.message,
+          data: [],
+          status: true
+        });
+      }
+
 }
 
 const sendOtp=async(req,res)=>{
